@@ -1,0 +1,26 @@
+import re
+def stuffed(data):
+    pos = [m.start() for m in re.finditer('011111', data)]
+    datalist = list(data)
+    j=0
+    for i in range(len(pos)):
+#         print(datalist)
+        datalist.insert((pos[i]+6+j),'0')
+        j=j+1
+    senddata = '01111110'+''.join(datalist)+'01111110'
+    return senddata
+def destuffed(nowdata):
+    print("Received data = ",nowdata)
+    nowdatalist = list(nowdata)[8:-8]
+    nowdatastr = ''.join(nowdatalist)
+    pos = [m.start() for m in re.finditer('011111',nowdatastr)]
+    j=0
+    for i in range(len(pos)):
+        nowdatalist.pop(pos[i]+6-j)
+        j=j+1
+    return ''.join(nowdatalist)
+data = input("Enter data = ")
+print("Accepted data = ",data)
+nowdata = stuffed(data)
+print("data to be sent = ",nowdata)
+print("Data after destuffing = ",destuffed(nowdata))

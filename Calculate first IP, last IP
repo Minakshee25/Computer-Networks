@@ -1,0 +1,48 @@
+def findClassMask(IP):
+    if(IP[0] < 128):
+        return 'A','255.0.0.0'
+    elif(IP[0] < 192):
+        return 'B', '255.255.0.0'
+    elif(IP[0] < 224):
+        return 'C', '255.255.255.0'
+    elif(IP[0] < 240):
+        return 'D', 'No'
+    elif(IP[0] < 256):
+        return 'E', 'No'
+def compliment(mask):
+    for i in range(4):
+        if(mask[i] == 255):
+            mask[i]=0
+        else:
+            mask[i]=255
+    return mask
+def findIP(IP, mask):
+    FirstIP = [1,2,3,4]
+    LastIP = [1,2,3,4]
+    for i in range(4):
+        FirstIP[i] = IP[i] & mask[i]
+    mask = compliment(mask)
+    for i in range(4):
+        LastIP[i] = IP[i] | mask[i]
+    return FirstIP, LastIP
+
+# driver code
+IP = [int(i) for i in input("Enter IP = ").split(".")]
+if(len(IP)>4):
+    print("Invalid IP \nReason: Given IP has more than 4 fields.")
+if(len(IP)<4):
+    print("Invalid IP \nReason: Given IP has less than 4 fields.")
+elif(max(IP)>255):
+    print("Invalid IP \nReason: Given IP has fields with integer values greater than 255")
+else:
+    print("Given IP is a VALID IP")
+    cls, mask = findClassMask(IP)
+    print("Class = ",cls)
+    if(mask=='No'):
+        print("Given IP belongs to reserved class having no default mask\nHence Cannot find Network address and broadcast address")
+    else:
+        print("Default mask = ",mask) # mask = 255.255.255.0
+        # print([int(i) for i in mask.split(".")]) = [255, 255, 255, 0]
+        FirstIP, LastIP = findIP(IP, [int(i) for i in mask.split(".")])
+        print("Network address / First IP = ",".".join(str(i) for i in FirstIP))
+        print("Broadcast address / Last IP = ",".".join(str(i) for i in LastIP))

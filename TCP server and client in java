@@ -1,0 +1,89 @@
+TCPserver: 
+
+import java.net.*;
+import java.io.*;
+public class server1
+{
+	public static void main(String args[])
+	{
+		try
+		{
+			System.out.println("Server is started");
+			ServerSocket ss = new ServerSocket(3456);
+			System.out.println("Server is waiting for client request!");
+			
+			Socket s1=ss.accept(); // returns a socket and establish connection between client and server
+			System.out.println("Client Connected!");
+			
+			InputStream is=s1.getInputStream(); // returns the InputStream attached with this socket
+			OutputStream os=s1.getOutputStream(); // returns the OutputStream attached with this socket
+			DataInputStream dis=new DataInputStream(is);
+			DataOutputStream dos=new DataOutputStream(os);
+			BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+
+			String line=dis.readUTF();
+			System.out.println("client is "+line);
+			while(true)
+			{
+				String str=dis.readUTF();			
+				System.out.println("Client : "+str);
+				System.out.println("Server : Length of the string is sent to client");
+				if(str.equalsIgnoreCase("exit"))
+					break;
+				int lengthofstring = str.length();
+				String l = Integer.toString(lengthofstring);
+				dos.writeUTF(l);
+			}
+			ss.close();
+		}
+			catch(Exception e)
+			{
+			}
+	}
+}
+
+
+
+
+TCPclient:
+
+import java.net.*;
+import java.io.*;
+public class client1
+{
+	public static void main(String args[])
+	{
+		try // because if port number is not available
+		{
+			// I
+			Socket s=new Socket("localhost",3456); //ip and port
+
+			InputStream is=s.getInputStream();
+			OutputStream os=s.getOutputStream();
+			
+			// we cannot send raw data so we convert data in the form of streams
+			DataInputStream dis=new DataInputStream(is);
+			DataOutputStream dos=new DataOutputStream(os);
+
+			// to get input from the user buffered reader is used
+			BufferedReader br=new BufferedReader(new InputStreamReader(System.in));	
+			System.out.println("Enter name:");
+			String i=br.readLine();
+			dos.writeUTF(i);
+			while(true)
+			{
+				System.out.println("Client : Enter data = ");
+				String str=br.readLine();
+				if(str.equalsIgnoreCase("exit"))
+					break;
+				dos.writeUTF(str);
+				String l=dis.readUTF();
+				System.out.println("Server : Length of string = "+l);
+			}
+			s.close();
+		}
+			catch(Exception e)
+			{
+			}
+	}
+}

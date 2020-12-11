@@ -1,0 +1,39 @@
+# refer handwritten notes example
+import random
+def xor(a,b):
+    return (bin(int(a,2) ^ int(b,2))[2:])
+def calculateCRC(M):
+    Mlist = list(M)
+    while (len(M) >= 4): # jab tak end me 4 se chhota number ni milta tab tak xor karte raho
+        M = xor(''.join(Mlist[:4]),'1101') + ''.join(Mlist[4:]) # pehle 4 bits ka 1101 ke sath xor karo aur jo ans milega usme aaege ke bits combinie kardo
+        Mlist = list(M) # new stage # here Mlist is required because list is required to index and slice.
+    CRC = M
+    return CRC
+def sending(M1,CRC):
+    # M1 = 110010000 and CRC = 100
+    # in dono ka binary addition karna hain.
+    # uske liye dono ko decimal me convert karo aur add karo fir answer ko binary me convert karo.
+    return (bin(int(M1,2) + int(CRC,2))[2:]) # starting ka 0b hatane ke liye [2:] ye use kiya
+def receiving(senddata):
+    if(int(calculateCRC(senddata),2) == 0): # calculateCRC binary me jo CRC dega usko decimal convert karne pe jo value aayega wo zero hai
+        print("Received Data {} is Accepted as it is correct!".format(senddata))
+    else:
+        print("Received Data {} is Discarded!".format(senddata))
+def errorgeneration(senddata):
+    slist = list(senddata) 
+    errorlist = random.sample(range(0,len(slist)),4) # this generates random list
+    for i in errorlist:
+        if (slist[i] == '1'):
+            slist[i] ='0'
+        elif (slist[i] == '0'):
+            slist[i] = '1'
+    return ''.join(slist)
+Morg = input('Enter M(x) = ')
+M = M1 = Morg + '000' # 3 zeros because generating polynomial is fixed i.e. 1101
+CRC = calculateCRC(M) # this will calculate CRC
+senddata = sending(M1,CRC) # sending M1 aur CRC ka binary addition karega
+print("Sent Data = ",senddata)
+receiving(senddata)
+
+errordata = errorgeneration(senddata)
+receiving(errordata)
